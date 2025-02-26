@@ -129,7 +129,6 @@ class ChatServer:
             sender = message["sender"]
             with self.lock:
                 if sender not in self.users:
-                    # Se o remetente não estiver conectado, entrega mesmo assim.
                     response = {"action": "message", "sender": sender, "text": message["text"]}
                     try:
                         user.conn.sendall((json.dumps(response) + "\n").encode())
@@ -153,7 +152,6 @@ class ChatServer:
         
         mq_handler.consume_messages(username, deliver)
         
-        # Agendar nova verificação em 5 segundos, para tentar entregar mensagens que ainda estejam pendentes.
         threading.Timer(5, lambda: self.check_pending(username)).start()
 
 
